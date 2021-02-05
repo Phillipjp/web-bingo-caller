@@ -13,3 +13,9 @@ libraryDependencies ++= Seq(
 )
 
 scalaJSUseMainModuleInitializer := true
+
+val stage = taskKey[Unit]("Stage task")
+
+val Stage = config("stage")
+
+stage :={}
