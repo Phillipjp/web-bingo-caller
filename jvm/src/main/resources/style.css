@@ -1,0 +1,59 @@
+/* Style the body */
+body {
+    font-family: Arial;
+    margin: 0;
+}
+
+/* Header/Logo Title */
+.header {
+    padding: 40px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+    font-size: 30px;
+}
+
+button {
+    background-color: #1abc9c;
+    border: solid 2px white;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    /*display: inline-block;*/
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+/* Page Content */
+#ctsb {
+    margin: auto;
+    display:block;
+}
+
+#cts {
+    padding-top: 10%;
+    margin: auto;
+}
+
+#n {
+    text-align: center;
+    font-size: 40px;
+}
+
+#co {
+    text-align: center;
+}
+
+#callNumberButton {
+    margin: auto;
+    display:block;
+}
+.muteButton {
+    width: 120px;
+}
+.muteButtonClicked {
+    background-color: red;
+}
+

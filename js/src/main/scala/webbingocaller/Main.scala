@@ -1,8 +1,8 @@
 package webbingocaller
 
 import org.scalajs.dom
-import org.scalajs.dom.document
-import org.scalajs.dom.html.Audio
+import org.scalajs.dom.{document, html}
+import org.scalajs.dom.html.{Audio, Document}
 import org.scalajs.dom.raw.Element
 import webbingocaller.ElementCreator._
 import webbingocaller.ElementIds._
