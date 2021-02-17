@@ -53,26 +53,32 @@ object Main {
     val audio = document.createElement("audio").asInstanceOf[Audio]
     document.body.appendChild(audio)
 
-    val muteButton = createMuteButton("mb", audio)
-    val optionsDiv = createDiv(Option("optionsDiv"))
+    val optionsDiv = createDiv(Option(OPTIONS_DIV_ID))
+
+    val muteButton = createMuteButton(MUTE_BUTTON_ID, audio)
     optionsDiv.appendChild(muteButton)
 
-    val autoPlayButton = createButton("Auto Play", () => {}, "autoPlayButton")
+    val autoPlayButton = createButton("Auto Play", () => {}, AUTO_PLAY_BUTTON_ID)
     attachEventListener(autoPlayButton, () => {toggleAutoPlay(autoPlayButton, audio)})
-
     optionsDiv.appendChild(autoPlayButton)
-    document.body.appendChild(optionsDiv)
 
-//    currentNumberDiv.appendChild(optionsDiv)
+    val restartButton = createButton("Restart", () => {restartGame()}, RESTART_BUTTON_ID)
+    optionsDiv.appendChild(restartButton)
+
     document.body.appendChild(optionsDiv)
 
     val calledNumbersDiv = createDiv(Option(CALLED_NUMBERS_DIV_ID))
 
-
     currentNumber(currentNumberDiv, audio)
-
     calledNumbers(calledNumbersDiv)
 
+  }
+
+  def restartGame(): Unit ={
+    caller.resetNumbers()
+    updatePar(" ", CURRENT_NUMBER_PAR_ID)
+    updatePar(" ", CALL_OUT_PAR_ID)
+    updatePar(" ", CALLED_NUMBERS_PAR_ID)
   }
 
   def toggleAutoPlay(element: Element, audio: Audio): Unit = {
