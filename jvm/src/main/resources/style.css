@@ -53,7 +53,8 @@ button {
 .muteButton {
     width: 120px;
 }
-.muteButtonClicked {
+
+.buttonClicked {
     background-color: red;
 }
 

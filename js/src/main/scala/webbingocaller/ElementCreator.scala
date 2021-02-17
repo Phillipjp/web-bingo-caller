@@ -41,10 +41,6 @@ object ElementCreator {
     parNode
   }
 
-//  trait MuteButtonState
-//  case object MUTED extends MuteButtonState
-//  case object UN_MUTED extends MuteButtonState
-//
   def createMuteButton(id: String, audio: Audio): Element = {
   val button = document.createElement("button")
   button.textContent = "Mute"
@@ -59,12 +55,18 @@ object ElementCreator {
   private def toggleAudioMute(audio: Audio, button: Element): Unit = {
     if(audio.muted) {
       button.textContent = "Mute"
-      button.classList.remove("muteButtonClicked")
+      button.classList.remove("buttonClicked")
     } else {
       button.textContent= "Unmute"
-      button.classList.add("muteButtonClicked")
+      button.classList.add("buttonClicked")
     }
     audio.muted = !audio.muted
+  }
+
+  def attachEventListener(element: Element, event:() => Unit ): Unit ={
+    element.addEventListener("click", { (e: dom.MouseEvent) =>
+      event()
+    })
   }
 
 }
