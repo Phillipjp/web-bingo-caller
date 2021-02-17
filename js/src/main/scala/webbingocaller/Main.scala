@@ -7,6 +7,7 @@ import org.scalajs.dom.raw.Element
 import webbingocaller.ElementCreator._
 import webbingocaller.ElementIds._
 import webbingocaller.ElementUpdater.updatePar
+import scala.scalajs.js.timers._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -18,11 +19,19 @@ object Main {
   case object SHOW_ALL extends PreviousNumbersState
   case object RECENT extends PreviousNumbersState
 
+  trait AutoPlayState
+  case object PLAYING extends AutoPlayState
+  case object NOT_PLAYING extends AutoPlayState
+
   private var previousNumbersState: PreviousNumbersState = RECENT
+
+  private var autoPlayState: AutoPlayState = NOT_PLAYING
+
+  private var setIntervalHandle: Option[SetIntervalHandle] = None
 
   def deleteElement(targetNode: dom.Node, id: String): Unit = {
     document.getElementById(id) match {
-      case node: Element =>   targetNode.removeChild(node)
+      case node: Element => targetNode.removeChild(node)
       case _ => println("no such element")
     }
   }
@@ -30,7 +39,9 @@ object Main {
 
   def clickToStart(): Unit = {
     val div = createDiv(Option(CLICK_TO_START_DIV_ID))
-    val button = createButton("Start Game", () => {bingo(); deleteElement(document.body, "cts")}, "ctsb")
+    val button = createButton("Start Game", () => {
+      bingo(); deleteElement(document.body, "cts")
+    }, "ctsb")
     div.appendChild(button)
     document.body.appendChild(div)
   }
@@ -43,25 +54,54 @@ object Main {
     document.body.appendChild(audio)
 
     val muteButton = createMuteButton("mb", audio)
-    val muteDiv = createDiv(Option("muteDiv"))
-    muteDiv.appendChild(muteButton)
+    val optionsDiv = createDiv(Option("optionsDiv"))
+    optionsDiv.appendChild(muteButton)
 
-    document.body.appendChild(muteDiv)
+    val autoPlayButton = createButton("Auto Play", () => {}, "autoPlayButton")
+    attachEventListener(autoPlayButton, () => {toggleAutoPlay(autoPlayButton, audio)})
 
-    currentNumberDiv.appendChild(muteDiv)
+    optionsDiv.appendChild(autoPlayButton)
+    document.body.appendChild(optionsDiv)
+
+//    currentNumberDiv.appendChild(optionsDiv)
+    document.body.appendChild(optionsDiv)
 
     val calledNumbersDiv = createDiv(Option(CALLED_NUMBERS_DIV_ID))
 
 
-    currentNumber(currentNumberDiv, calledNumbersDiv, audio)
+    currentNumber(currentNumberDiv, audio)
 
     calledNumbers(calledNumbersDiv)
 
   }
 
-  def currentNumber(currentNumberDiv: Element, calledNumbersDiv: Element, audio: Audio): Unit = {
+  def toggleAutoPlay(element: Element, audio: Audio): Unit = {
+    autoPlayState match {
+      case PLAYING =>
+        autoPlayState = NOT_PLAYING
+        setIntervalHandle match {
+          case Some(handle) => clearInterval(handle)
+          case None =>
+        }
+        element.classList.remove("buttonClicked")
+      case NOT_PLAYING =>
+        callNumber(audio)
+        val handle: SetIntervalHandle = setInterval(9000) {
+          callNumber(audio)
+        }
+        setIntervalHandle = Option(handle)
+        autoPlayState = PLAYING
+        element.classList.add("buttonClicked")
+    }
 
-    val button = createButton("Call Number", () => {callNumber(calledNumbersDiv, audio)}, "callNumberButton")
+  }
+
+
+  def currentNumber(currentNumberDiv: Element, audio: Audio): Unit = {
+
+    val button = createButton("Call Number", () => {
+      callNumber(audio)
+    }, "callNumberButton")
 
     val currentNumberPar = createPar(" ", Option(CURRENT_NUMBER_PAR_ID), None)
     currentNumberDiv.appendChild(currentNumberPar)
@@ -72,7 +112,7 @@ object Main {
   }
 
   @JSExportTopLevel("callNumber")
-  def callNumber(calledNumbersDiv: Element, audio: Audio): Unit = {
+  def callNumber(audio: Audio): Unit = {
     caller.callNumber match {
       case Some(i) =>
         updatePar(i.toString, CURRENT_NUMBER_PAR_ID)
@@ -101,8 +141,12 @@ object Main {
 
   def calledNumbers(calledNumbersDiv: Element): Unit = {
 
-    val showAllButton = createButton("Show All", () => {showAllPreviousNumbers()}, All_CALLED_NUMBERS_BUTTON_ID)
-    val showRecentButton = createButton("Show Recent", () => {showRecentPreviousNumbers()}, RECENT_CALLED_NUMBERS_BUTTON_ID)
+    val showAllButton = createButton("Show All", () => {
+      showAllPreviousNumbers()
+    }, All_CALLED_NUMBERS_BUTTON_ID)
+    val showRecentButton = createButton("Show Recent", () => {
+      showRecentPreviousNumbers()
+    }, RECENT_CALLED_NUMBERS_BUTTON_ID)
 
     val previousNumbersPar = createPar("Previous Numbers:", Option(PREVIOUS_NUMBERS_PAR_ID), None)
     calledNumbersDiv.appendChild(previousNumbersPar)
